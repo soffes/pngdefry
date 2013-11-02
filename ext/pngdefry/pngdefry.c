@@ -390,6 +390,12 @@ void applyRowFilters (int wide, int high, unsigned char *data)
 
 int process (char *filename, char *write_file_name, unsigned int *width, unsigned int *height)
 {
+	// Reset
+	repack_IDAT_size = 524288;
+	num_chunks = 0;
+	max_chunks = 0;
+	pngChunks = NULL;
+
 	FILE *f;
 	unsigned int length;
 	int i;
@@ -1143,7 +1149,7 @@ int process (char *filename, char *write_file_name, unsigned int *width, unsigne
 		{
 			printf ("%s : ", filename);
 		}
-		printf ("writing to file %s\n", write_file_name);
+		//printf ("writing to file %s\n", write_file_name);
 
 		write_file = fopen (write_file_name, "wb");
 		if (!write_file)
@@ -1252,7 +1258,6 @@ int process (char *filename, char *write_file_name, unsigned int *width, unsigne
 			i++;
 		}
 		fclose (write_file);
-		free (write_file_name);
 		reset_chunks ();
 
 		return 1;
@@ -1283,7 +1288,7 @@ VALUE method_pngdefry_dimensions(VALUE self, VALUE input);
 
 void Init_pngdefry() {
   Pngdefry = rb_define_module("Pngdefry");
-  rb_define_singleton_method(Pngdefry, "defry", method_pngdefry_defry, 2);
+  rb_define_singleton_method(Pngdefry, "_defry", method_pngdefry_defry, 2);
   rb_define_singleton_method(Pngdefry, "dimensions", method_pngdefry_dimensions, 1);
 }
 
