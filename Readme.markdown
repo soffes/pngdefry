@@ -20,8 +20,17 @@ Or install it yourself as:
 
 ## Usage
 
+To defry an image, call `defry`:
+
 ``` ruby
 Pngdefry.defry('input.png', 'output.png')
+```
+
+If you just need the dimensions, you can simply call `dimensions`:
+
+``` ruby
+Pngdefry.dimensions('input.png')
+#=> [58, 58]
 ```
 
 ## Contributing

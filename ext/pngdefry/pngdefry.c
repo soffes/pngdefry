@@ -388,7 +388,7 @@ void applyRowFilters (int wide, int high, unsigned char *data)
 	}
 }
 
-int process (char *filename, char *write_file_name)
+int process (char *filename, char *write_file_name, unsigned int *width, unsigned int *height)
 {
 	FILE *f;
 	unsigned int length;
@@ -613,6 +613,13 @@ int process (char *filename, char *write_file_name)
 	}
 	imgwidth = read_long (&ihdr_chunk->data[4]);
 	imgheight = read_long (&ihdr_chunk->data[8]);
+
+	if (!write_file_name) {
+		*width = imgwidth;
+		*height = imgheight;
+		return 1;
+	}
+
 	bitdepth = ihdr_chunk->data[12];
 	colortype = ihdr_chunk->data[13];
 	compression = ihdr_chunk->data[14];
@@ -1130,7 +1137,7 @@ int process (char *filename, char *write_file_name)
 		free (data_out);
 	}
 
-	if (1)
+	if (write_file_name)
 	{
 		if (!didShowName)
 		{
@@ -1272,15 +1279,29 @@ int process (char *filename, char *write_file_name)
 VALUE Pngdefry = Qnil;
 void Init_pngdefry();
 VALUE method_pngdefry_defry(VALUE self, VALUE input, VALUE output);
+VALUE method_pngdefry_dimensions(VALUE self, VALUE input);
 
 void Init_pngdefry() {
   Pngdefry = rb_define_module("Pngdefry");
   rb_define_singleton_method(Pngdefry, "defry", method_pngdefry_defry, 2);
+  rb_define_singleton_method(Pngdefry, "dimensions", method_pngdefry_dimensions, 1);
 }
 
 VALUE method_pngdefry_defry(VALUE self, VALUE input, VALUE output) {
   char *filename = StringValueCStr(input);
   char *outputFilename = StringValueCStr(output);
-  int result = process(filename, outputFilename);
+  int result = process(filename, outputFilename, NULL, NULL);
   return INT2FIX(result);
+}
+
+VALUE method_pngdefry_dimensions(VALUE self, VALUE input) {
+  char *filename = StringValueCStr(input);
+  unsigned int width = 0;
+  unsigned int height = 0;
+  int result = process(filename, NULL, &width, &height);
+
+  VALUE array = rb_ary_new();
+  rb_ary_store(array, 0, INT2FIX(width));
+  rb_ary_store(array, 1, INT2FIX(height));
+  return array;
 }
