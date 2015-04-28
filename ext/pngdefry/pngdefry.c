@@ -480,7 +480,10 @@ int process (char *filename, char *write_file_name, unsigned int *width, unsigne
 	if (pngChunks[0].id != 0x43674249)	/* "CgBI" */
 	{
 		isPhoney = 0;
-		printf ("%s : not an -iphone crushed PNG file\n", filename);
+		if (flag_Verbose)
+		{
+			printf ("%s : not an -iphone crushed PNG file\n", filename);
+		}
 		if (!flag_Process_Anyway)
 		{
 			fclose (f);
